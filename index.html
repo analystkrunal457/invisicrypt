@@ -1,0 +1,431 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark"> <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InvisiCrypt - Professional Steganography Suite</title>
+    <meta name="description" content="Hide and detect secret messages in images and audio with AES-256 encryption. All processing is 100% client-side. Fast, secure, and private steganography and steganalysis.">
+    <meta name="keywords" content="Steganography, Steganalysis, AES Encryption, Hide Message, Detect Hidden, Image Security, Audio Security, InvisiCrypt, LSB, Chi-Square">
+    
+    <meta property="og:title" content="InvisiCrypt - Steganography Suite" />
+    <meta property="og:description" content="Hide messages in images/audio & detect hidden info using advanced techniques. Secure & private." />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content="https://i.imgur.com/your-image-link.png" /> 
+    <meta property="og:url" content="https://your-username.github.io/your-repo-name/" /> 
+    
+    <link rel="icon" href="favicon.ico" type="image/x-icon">
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+    
+    <link rel="stylesheet" href="style.css">
+    
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <a href="#" class="logo" onclick="location.reload()">
+                    <svg class="logo-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg" fill-rule="evenodd" clip-rule="evenodd" stroke-linejoin="round" stroke-miterlimit="2">
+                        <defs>
+                            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" style="stop-color:var(--primary); stop-opacity:1" />
+                                <stop offset="100%" style="stop-color:var(--secondary); stop-opacity:1" />
+                            </linearGradient>
+                        </defs>
+                        <path fill="url(#logoGradient)" d="M50 10C27.909 10 10 27.909 10 50s17.909 40 40 40 40-17.909 40-40S72.091 10 50 10zM50 20c16.569 0 30 13.431 30 30S66.569 80 50 80 20 66.569 20 50s13.431-30 30-30zm0 10c5.523 0 10 4.477 10 10s-4.477 10-10 10-10-4.477-10-10 4.477-10 10-10z"/>
+                        <path fill="var(--bg-light)" d="M50 43c3.866 0 7 3.134 7 7s-3.134 7-7 7-7-3.134-7-7 3.134-7 7-7z" opacity="0.5"/>
+                    </svg>
+                    <span>InvisiCrypt</span>
+                </a>
+                <div class="nav-right">
+                    <nav>
+                        <a href="#embed" class="nav-link active" data-tab="embed">Embed</a>
+                        <a href="#extract" class="nav-link" data-tab="extract">Extract</a>
+                        <a href="#analyze" class="nav-link" data-tab="analyze">Analyze</a>
+                        <a href="#faq" class="nav-link" data-tab="faq">FAQ & Privacy</a>
+                    </nav>
+                    <button class="theme-toggle" id="theme-toggle" title="Toggle theme">
+                        <i class="icon-sun" data-lucide="sun"></i>
+                        <i class="icon-moon" data-lucide="moon"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="hero">
+        <div class="container">
+            <h1>InvisiCrypt</h1>
+            <p>Advanced Steganography & Steganalysis Suite</p>
+            <p>Hide secret data in images and audio files with authenticated encryption</p>
+            <div class="hero-badges">
+                <div class="badge">🔐 AES-256-GCM Encryption</div>
+                <div class="badge">🖼️ Image (PNG)</div>
+                <div class="badge">🎵 Audio (WAV)</div>
+                <div class="badge">📦 Gzip Compression</div>
+                <div class="badge">🔍 Advanced Analysis</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="main-content">
+            <div id="alert" class="alert"></div>
+            
+            <div class="tabs">
+                <button class="tab active" data-tab="embed">📥 Embed</button>
+                <button class="tab" data-tab="extract">📤 Extract</button>
+                <button class="tab" data-tab="analyze">🔬 Analyze</button>
+                <button class="tab" data-tab="faq">ℹ️ FAQ & Privacy</button>
+            </div>
+
+            <div id="embed" class="tab-content active">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-tab="embed-image">🖼️ Image</button>
+                    <button class="sub-tab" data-tab="embed-audio">🎵 Audio</button>
+                </div>
+                
+                <div id="embed-image" class="sub-tab-content active">
+                    <h2>Hide in Image</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Upload a cover image (PNG, JPG) and embed your secret message.</p>
+                    <div class="form-group">
+                        <label>Cover Image</label>
+                        <div class="file-upload" id="embedUploadImage">
+                            <input type="file" id="embedFileImage" accept="image/*">
+                            <div class="upload-icon"><i data-lucide="image"></i></div>
+                            <p>Click or drag image here</p>
+                            <small style="color: var(--gray);">PNG recommended for LSB</small>
+                        </div>
+                    </div>
+                    <div class="image-preview" id="embedPreviewImage"></div>
+                    <div class="form-group">
+                        <label>Secret Message</label>
+                        <textarea id="embedMessageImage" placeholder="Enter your secret message here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Password (Required)</label>
+                        <input type="password" id="embedPasswordImage" placeholder="Enter encryption password">
+                    </div>
+                    <div class="form-group-inline">
+                        <div class="form-group">
+                            <label>Embedding Method</label>
+                            <select id="embedMethodImage" disabled>
+                                <option value="lsb">LSB (Best for PNG/BMP)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bit Depth (Security vs. Capacity)</label>
+                            <select id="embedBitDepthImage">
+                                <option value="1">1-bit (Highest Security, Low Capacity)</option>
+                                <option value="2">2-bit (Good Balance, Medium Capacity)</option>
+                                <option value="3">3-bit (Lowest Security, High Capacity)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label>Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="embedCompressionImage" checked>
+                            <label for="embedCompressionImage">Compress Message (Gzip)</label>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="embedBtnImage"><i data-lucide="lock"></i> Embed Message</button>
+                        <button class="btn btn-secondary" id="clearEmbedBtnImage"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="embedLoadingImage">
+                        <div class="spinner"></div>
+                        <p>Deriving key, compressing, encrypting, and embedding...</p>
+                    </div>
+                    <div id="embedResultImage"></div>
+                </div>
+                
+                <div id="embed-audio" class="sub-tab-content">
+                    <h2>Hide in Audio</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Upload a cover audio file (WAV) and embed your secret message.</p>
+                    <div class="form-group">
+                        <label>Cover Audio (WAV)</label>
+                        <div class="file-upload" id="embedUploadAudio">
+                            <input type="file" id="embedFileAudio" accept="audio/wav, audio/wave">
+                            <div class="upload-icon"><i data-lucide="music"></i></div>
+                            <p>Click or drag WAV file here</p>
+                            <small style="color: var(--gray);">Supports 8-bit and 16-bit WAV files.</small>
+                        </div>
+                    </div>
+                    <div class="audio-preview" id="embedPreviewAudio" style="display: none;"></div>
+                    <div class="form-group">
+                        <label>Secret Message</label>
+                        <textarea id="embedMessageAudio" placeholder="Enter your secret message here..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Password (Required)</label>
+                        <input type="password" id="embedPasswordAudio" placeholder="Enter encryption password">
+                    </div>
+                    <div class="form-group-inline">
+                        <div class="form-group">
+                            <label>Embedding Method</label>
+                            <select id="embedMethodAudio" disabled>
+                                <option value="lsb">LSB (WAV)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Bit Depth (Security vs. Capacity)</label>
+                            <select id="embedBitDepthAudio">
+                                <option value="1">1-bit (Highest Security, Low Capacity)</option>
+                                <option value="2">2-bit (Good Balance, Medium Capacity)</option>
+                                <option value="3">3-bit (Lowest Security, High Capacity)</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                         <label>Options</label>
+                        <div class="checkbox-group">
+                            <input type="checkbox" id="embedCompressionAudio" checked>
+                            <label for="embedCompressionAudio">Compress Message (Gzip)</label>
+                        </div>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="embedBtnAudio"><i data-lucide="lock"></i> Embed Message</button>
+                        <button class="btn btn-secondary" id="clearEmbedBtnAudio"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="embedLoadingAudio">
+                        <div class="spinner"></div>
+                        <p>Parsing WAV, deriving key, compressing, encrypting, and embedding...</p>
+                    </div>
+                    <div id="embedResultAudio"></div>
+                </div>
+            </div>
+
+            <div id="extract" class="tab-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-tab="extract-image">🖼️ Image</button>
+                    <button class="sub-tab" data-tab="extract-audio">🎵 Audio</button>
+                </div>
+
+                <div id="extract-image" class="sub-tab-content active">
+                    <h2>Extract from Image</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Upload a stego image and provide the password.</p>
+                    <div class="form-group">
+                        <label>Stego Image</label>
+                        <div class="file-upload" id="extractUploadImage">
+                            <input type="file" id="extractFileImage" accept="image/*">
+                            <div class="upload-icon"><i data-lucide="image-plus"></i></div>
+                            <p>Click or drag stego image here</p>
+                        </div>
+                    </div>
+                    <div class="image-preview" id="extractPreviewImage"></div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <textarea id="extractPasswordImage" placeholder="Enter the password used for embedding..." rows="3"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="extractBtnImage"><i data-lucide="unlock"></i> Extract Message</button>
+                        <button class="btn btn-secondary" id="clearExtractBtnImage"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="extractLoadingImage">
+                        <div class="spinner"></div>
+                        <p>Deriving key, extracting, decrypting, and decompressing...</p>
+                    </div>
+                    <div id="extractResultImage"></div>
+                </div>
+
+                <div id="extract-audio" class="sub-tab-content">
+                    <h2>Extract from Audio</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Upload a stego audio file (WAV) and provide the password.</p>
+                    <div class="form-group">
+                        <label>Stego Audio (WAV)</label>
+                        <div class="file-upload" id="extractUploadAudio">
+                            <input type="file" id="extractFileAudio" accept="audio/wav, audio/wave">
+                            <div class="upload-icon"><i data-lucide="file-audio"></i></div>
+                            <p>Click or drag stego WAV file here</p>
+                        </div>
+                    </div>
+                    <div class="audio-preview" id="extractPreviewAudio" style="display: none;"></div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <textarea id="extractPasswordAudio" placeholder="Enter the password used for embedding..." rows="3"></textarea>
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="extractBtnAudio"><i data-lucide="unlock"></i> Extract Message</button>
+                        <button class="btn btn-secondary" id="clearExtractBtnAudio"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="extractLoadingAudio">
+                        <div class="spinner"></div>
+                        <p>Parsing WAV, deriving key, extracting, decrypting, and decompressing...</p>
+                    </div>
+                    <div id="extractResultAudio"></div>
+                </div>
+            </div>
+
+            <div id="analyze" class="tab-content">
+                <div class="sub-tabs">
+                    <button class="sub-tab active" data-tab="analyze-detect">🔍 Detect Steganography</button>
+                    <button class="sub-tab" data-tab="analyze-evaluate">📊 Evaluate Quality</button>
+                </div>
+                
+                <div id="analyze-detect" class="sub-tab-content active">
+                    <h2>Advanced Image Analysis</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Upload one or more images for bulk analysis (Chi-Square & Histogram).</p>
+                    <div class="form-group">
+                        <label>Images to Analyze</label>
+                        <div class="file-upload" id="detectUploadImage">
+                            <input type="file" id="detectFileImage" accept="image/*" multiple>
+                            <div class="upload-icon"><i data-lucide="search-code"></i></div>
+                            <p>Click or drag images here</p>
+                            <small style="color: var(--gray);">**PNG format recommended.** JPEGs may give false positives.</small>
+                        </div>
+                    </div>
+                    <div id="detectFilePreviewList" class="form-group" style="display: none;"></div>
+                    <div class="form-group slider-group">
+                        <label for="detectSensitivity">Analysis Sensitivity
+                            <span><span id="sensitivityLabel">Default (2.50)</span></span>
+                        </label>
+                        <input type="range" id="detectSensitivity" min="100" max="500" value="250" step="10">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="detectBtnImage"><i data-lucide="scan-line"></i> Analyze All</button>
+                        <button class="btn btn-secondary" id="clearDetectBtnImage"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="detectLoadingImage">
+                        <div class="spinner"></div>
+                        <p>Running statistical analysis on all images...</p>
+                    </div>
+                    <div id="detectResultSummary" style="display: none;">
+                        <h3 style="color: var(--secondary); margin: 30px 0 16px 0;">Analysis Summary</h3>
+                        <div class="summary-table-wrapper">
+                            <table class="summary-table">
+                                <thead>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th>Chi-Square</th>
+                                        <th>Status</th>
+                                        <th>Details</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="detectSummaryTableBody"></tbody>
+                            </table>
+                        </div>
+                    </div>
+                    <div id="detectDetailResultImage" style="display: none;"></div>
+                </div>
+
+                <div id="analyze-evaluate" class="sub-tab-content">
+                    <h2>Evaluate Image Quality</h2>
+                    <p style="color: var(--text-secondary); margin-bottom: 24px;">Compare cover and stego images to measure quality metrics (PSNR/MSE).</p>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label>Cover Image (Original)</label>
+                            <div class="file-upload" id="evalCoverUploadImage">
+                                <input type="file" id="evalCoverFileImage" accept="image/*">
+                                <div class="upload-icon"><i data-lucide="file-image"></i></div>
+                                <p>Original image</p>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>Stego Image (With hidden data)</label>
+                            <div class="file-upload" id="evalStegoUploadImage">
+                                <input type="file" id="evalStegoFileImage" accept="image/*">
+                                    <div class="upload-icon"><i data-lucide="file-lock"></i></div>
+                                    <p>Stego image</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="image-preview" id="evalPreviewImage"></div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="evaluateBtnImage"><i data-lucide="bar-chart-2"></i> Calculate Metrics</button>
+                        <button class="btn btn-secondary" id="clearEvalBtnImage"><i data-lucide="trash-2"></i> Clear</button>
+                    </div>
+                    <div class="loading" id="evalLoadingImage">
+                        <div class="spinner"></div>
+                        <p>Calculating quality metrics...</p>
+                    </div>
+                    <div id="evalResultImage"></div>
+                </div>
+            </div>
+
+            <div id="faq" class="tab-content">
+                <h2>Frequently Asked Questions</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 24px;">Common questions about InvisiCrypt and steganography.</p>
+                
+                <div class="faq-list" id="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Is this tool really secure?</span>
+                            <i class="icon-chevron" data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Yes. This tool uses AES-256-GCM, which is an industry-standard, authenticated encryption algorithm. This means your data is not only encrypted, but also protected from tampering. The decryption will fail if the password is wrong or the hidden data is modified by even one bit.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Is my data uploaded to your server?</span>
+                            <i class="icon-chevron" data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p><strong>Absolutely not.</strong> All processing (embedding, extracting, analysis) happens 100% locally in your web browser. Your files and your password never leave your computer. This is a key privacy and security feature of InvisiCrypt. You can disconnect from the internet after loading the page, and the tool will continue to work perfectly.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Why does "Analyze" flag my stego image?</span>
+                            <i class="icon-chevron" data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>Because it's working correctly! The "Detect" tab runs a Chi-Square statistical test. A normal, "clean" image has natural patterns, which results in a LOW Chi-Square score. Encrypted data is perfectly random. Embedding this random data *destroys* the image's natural patterns, resulting in a HIGH Chi-Square score, which the tool flags as "Detected."</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Why does embedding fail on some files?</span>
+                            <i class="icon-chevron" data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>The most common reason is capacity. Your secret message (after compression and encryption) is simply too large to fit in the carrier file you chose. You can try to fix this by: <br>1. Choosing a <strong>larger image or audio file</strong> (more pixels/samples = more space). <br>2. Choosing a <strong>higher bit depth</strong> (e.g., 2-bit or 3-bit) to use more space per pixel, though this is slightly less secure. <br>3. Ensuring "Compress Message" is checked.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="faq-item">
+                        <div class="faq-question">
+                            <span>Why only WAV and not MP3?</span>
+                            <i class="icon-chevron" data-lucide="chevron-down"></i>
+                        </div>
+                        <div class="faq-answer">
+                            <p>WAV and PNG are "lossless" formats, meaning they store raw, uncompressed data. This makes it easy to modify the least-significant bits (LSBs) without corrupting the file. MP3 and JPEG are "lossy" compressed formats. They do not store raw samples/pixels, and changing even one bit can corrupt the entire file. Hiding data in MP3s is a completely different, far more complex process that is not based on LSB.</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="privacy-section">
+                    <h3>Privacy Policy</h3>
+                    <p>InvisiCrypt is a client-side application. We do not have a server. We do not see, store, transmit, or have any access to your files, your passwords, or your secret messages. All processing is performed on your local device using JavaScript in your browser. Your privacy is 100% guaranteed as your data never leaves your computer.</p>
+                    
+                    <h3>Terms of Service</h3>
+                    <p>InvisiCrypt is provided "as is" without any warranty. By using this tool, you agree that you are solely responsible for your data. This tool uses strong AES-256 encryption. If you forget your password, your data is irrecoverable. We have no way to reset or recover a lost password. Do not use this tool for any illegal activities. The authors and distributors of this tool are not responsible for any data loss, data theft, or misuse of this software.</p>
+                </div>
+            </div>
+            </div>
+    </div>
+
+    <footer>
+        <div class="container">
+            <div class="footer-links">
+                <a href="#embed" class="nav-link" data-tab="embed">Embed</a>
+                <a href="#extract" class="nav-link" data-tab="extract">Extract</a>
+                <a href="#analyze" class="nav-link" data-tab="analyze">Analyze</a>
+                <a href="#faq" class="nav-link" data-tab="faq">FAQ & Privacy</a>
+            </div>
+            <p>© 2025 InvisiCrypt - Advanced Steganography Suite</p>
+            <p style="opacity: 0.8; margin-top: 10px; font-size: 14px;">
+                All processing happens locally in your browser. Your data is never uploaded.
+            </p>
+        </div>
+    </footer>
+
+    <script src="app.js" defer></script>
+    
+</body>
+</html>
